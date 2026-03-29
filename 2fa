@@ -1,0 +1,12 @@
+"""
+SQLite migration helper to add 2FA columns
+"""
+import sqlite3
+import os
+
+def add_2fa_columns(db_path):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Add 2FA columns if not exists
+    try
