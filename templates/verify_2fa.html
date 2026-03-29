@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="content-section">
+        <h2>Two-Factor Authentication</h2>
+        <p>Enter the 6-digit code from your authenticator app.</p>
+        <form method="POST" action="{{ url_for('users.verify_2fa') }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.token.label(class="form-control-label") }}
+                {% if form.token.errors %}
+                    {{ form.token(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.token.errors %}
+                            <span>{{ error }}</span>
