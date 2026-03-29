@@ -1,0 +1,31 @@
+food-website/
+│
+├── .venv/
+├── flaskblog/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── models.py
+│   ├── users/
+│   │   ├── routes.py
+│   │   ├── forms.py
+│   │   └── utils.py
+│   ├── recipes/
+│   │   ├── routes.py
+│   │   └── forms.py
+│   ├── main/
+│   │   └── routes.py
+│   └── errors/
+│       └── handlers.py
+│
+├── templates/
+│   ├── base.html
+│   ├── login.html
+│   ├── register.html
+│   └── verify_2fa.html
+│
+├── static/
+│   └── profile_pics/
+│
+├── run.py
+├── requirements.txt
+└── migration_add_2fa_sqlite.py
