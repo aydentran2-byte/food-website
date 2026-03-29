@@ -3,6 +3,7 @@ blinker==1.7.0
 certifi==2024.2.2
 cffi==1.16.0
 click==8.1.7
+email-validator==2.1.0
 Flask==3.0.2
 Flask-Bcrypt==1.0.1
 Flask-Login==0.6.3
@@ -18,3 +19,13 @@ six==1.16.0
 SQLAlchemy==2.0.25
 Werkzeug==3.0.1
 WTForms==3.1.2
+# Security additions for assessment
+argon2-cffi==23.1.0
+pyotp==2.9.0
+qrcode==7.4.2
+Flask-Limiter==3.5.0
+Flask-Talisman==1.1.0
+bandit==1.7.5
+flake8==7.0.0
+safety==3.0.1
+gunicorn==21.2.0
