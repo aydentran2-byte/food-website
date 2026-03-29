@@ -1,64 +1,43 @@
-#!/usr/bin/env python
-"""
-Automated database initialization script.
-Runs all populate scripts in the correct order.
-"""
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from argon2 import PasswordHasher
+from flask_wtf.csrf import CSRFProtect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_talisman import Talisman
+from flask_login import LoginManager
+from flask_mail import Mail
+from flaskblog.config import Config
 
-import subprocess
-import sys
+db = SQLAlchemy()
+ph = PasswordHasher()
+csrf = CSRFProtect()
+limiter = Limiter(key_func=get_remote_address, default_limits=["200 per day", "50 per hour"])
+talisman = Talisman()
+login_manager = LoginManager()
+login_manager.login_view = 'users.login'
+login_manager.login_message_category = 'info'
+mail = Mail()
 
-# List of populate scripts to run in order
-POPULATE_SCRIPTS = [
-    'populate.py',
-    'populate_blog.py',
-    'populate_challenges.py',
-    'populate_ratings.py',
-    'populate_blog_and_videos.py'
-]
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
 
-def run_script(script_name):
-    """Run a populate script and report status."""
-    print(f"\n{'='*60}")
-    print(f"Running: {script_name}")
-    print('='*60)
-    
-    try:
-        result = subprocess.run([sys.executable, script_name], check=True)
-        print(f"✓ {script_name} completed successfully")
-        return True
-    except subprocess.CalledProcessError as e:
-        print(f"✗ {script_name} failed with error code {e.returncode}")
-        return False
-    except FileNotFoundError:
-        print(f"✗ {script_name} not found")
-        return False
+    db.init_app(app)
+    csrf.init_app(app)
+    limiter.init_app(app)
+    talisman.init_app(app)
+    login_manager.init_app(app)
+    mail.init_app(app)
 
-def main():
-    """Run all populate scripts."""
-    print("\n" + "="*60)
-    print("DATABASE INITIALIZATION")
-    print("="*60)
+    from flaskblog.users.routes import users
+    from flaskblog.recipes.routes import posts
+    from flaskblog.main.routes import main
+    from flaskblog.errors.handlers import errors
     
-    failed_scripts = []
-    
-    for script in POPULATE_SCRIPTS:
-        if not run_script(script):
-            failed_scripts.append(script)
-    
-    print("\n" + "="*60)
-    print("INITIALIZATION COMPLETE")
-    print("="*60)
-    
-    if failed_scripts:
-        print(f"\n⚠ {len(failed_scripts)} script(s) failed:")
-        for script in failed_scripts:
-            print(f"  - {script}")
-        return 1
-    else:
-        print("\n✓ All scripts completed successfully!")
-        print("\nYour database is now fully populated.")
-        print("Run 'python run.py' to start the application.")
-        return 0
+    app.register_blueprint(users)
+    app.register_blueprint(posts)
+    app.register_blueprint(main)
+    app.register_blueprint(errors)
 
-if __name__ == '__main__':
-    sys.exit(main())
+    return app
